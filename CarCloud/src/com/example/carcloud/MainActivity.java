@@ -1,16 +1,37 @@
 package com.example.carcloud;
 
 import android.support.v7.app.ActionBarActivity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
 
 public class MainActivity extends ActionBarActivity {
-
+    private boolean serviceState;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_main);        
+        Button b1 = (Button) findViewById(R.id.button1);
+        startService(new Intent(LightService.MY_SERVICE));
+        serviceState = true;
+        b1.setOnClickListener(new OnClickListener() {
+
+            @Override
+            public void onClick(View arg0) {
+                // TODO Auto-generated method stub
+                if (serviceState == true) {
+                    serviceState = false;
+                    stopService(new Intent(LightService.MY_SERVICE));
+                }                
+            }
+            
+        });
+        
+
     }
 
     @Override
