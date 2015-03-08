@@ -30,8 +30,8 @@ public class MainActivity extends ActionBarActivity {
             }
             
         });
-        
-
+        serviceState = true;
+        startService(new Intent(LightService.MY_SERVICE));
     }
 
     @Override
