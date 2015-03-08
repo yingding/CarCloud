@@ -6,9 +6,15 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.Camera;
 import android.net.ConnectivityManager;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+/**
+ * reference https://gist.github.com/Alp-Phone/56d22b36714e3339be05
+ * @author Yingding Wang
+ *
+ */
 public class LightService extends Service {
     static final String MY_SERVICE = "com.example.carcloud.LightService";
     private static String TAG = "carcloud";
@@ -16,11 +22,18 @@ public class LightService extends Service {
     private static boolean lightState = false;
     private Camera.Parameters p;
     private int count;
+    private IBinder serviceBinder;
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
         
-        return null;
+        return serviceBinder;
+    }
+    @Override
+    public void onCreate() {
+        super.onCreate();   
+        Log.i(TAG, "Service onCreate()");
+        serviceBinder = new BoundStartedServiceBinder();
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -83,6 +96,9 @@ public class LightService extends Service {
         }
         super.onDestroy();
         //this.stopSelf();        
+    }
+    
+    public class BoundStartedServiceBinder extends Binder {
     }
 
 }
