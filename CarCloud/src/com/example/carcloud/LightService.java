@@ -43,7 +43,7 @@ public class LightService extends Service {
         // TODO Auto-generated method stub
         super.onStart(intent, startId);
         serving();
-        //this.stopSelf();
+        this.stopSelf();
         return START_STICKY; 
     }  
     
@@ -60,20 +60,28 @@ public class LightService extends Service {
                 Boolean isWifi = manager.getNetworkInfo(
                 ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
                 if (isWifi && hasFlash) {
-                    initCam();
+                    if (cam == null) initCam();
                     flipLight();
                     // if the cam is not released and connected again, 
                     // startPreview is not posible after stopPreview
                     cam.release();
                 } else if (hasFlash) {
                     // if no wi
-                  if (!lightState) cam.startPreview();
+                    if (!lightState) {
+                      initCam();
+                      cam.startPreview();
+                  }
                 }               
                 Thread.sleep(4000);
                 count++;        
             } catch (InterruptedException e) {
                 //e.printStackTrace();
+                if (cam != null) {
+                    cam.stopPreview();
+                    cam.release();
+                }
                 this.isTermated = true;
+                Log.i(TAG, "Service interrupted!");
             }
                
         }

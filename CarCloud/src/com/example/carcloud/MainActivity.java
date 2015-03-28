@@ -17,6 +17,7 @@ import android.widget.Button;
 public class MainActivity extends ActionBarActivity {
     private boolean serviceState;
     private ServiceConnection boundStartedServiceConnection;
+    private static String TAG = "carcloud";
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,13 +29,13 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 // TODO Auto-generated method stub
-                Log.i(MainActivity.class.getSimpleName(), "Service bound");
+                Log.i(TAG, "Service bound");
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 // TODO Auto-generated method stub
-                Log.i(MainActivity.class.getSimpleName(), "Service disconnected");
+                Log.i(TAG, "Service disconnected");
             }
         };
 
@@ -56,16 +57,20 @@ public class MainActivity extends ActionBarActivity {
     
     private Intent createExplizitIntent() {
         Intent explizitIntent = new Intent(LightService.MY_SERVICE);
-        ComponentName component = new ComponentName("com.example.carcloud", "LightService");
-        explizitIntent.setComponent(component);
+        explizitIntent.setComponent(createComponentName());
         return explizitIntent;
+    }
+    private ComponentName createComponentName() {
+        return new ComponentName("com.example.carcloud", "LightService");
     }
     
     @Override
     protected void onStart() {
         super.onStart();
-        Intent intent = new Intent(this, LightService.class);
-        bindService(intent, boundStartedServiceConnection, Context.BIND_AUTO_CREATE);
+//        serviceState = true;
+//        Intent intent = new Intent(this, LightService.class);
+//        //intent.setComponent(createComponentName());
+//        bindService(intent, boundStartedServiceConnection, Context.BIND_AUTO_CREATE);
     }
  
     @Override
