@@ -17,6 +17,7 @@ import android.widget.Button;
 public class MainActivity extends ActionBarActivity {
     private boolean serviceState;
     private ServiceConnection boundStartedServiceConnection;
+    
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,13 +45,20 @@ public class MainActivity extends ActionBarActivity {
                 // TODO Auto-generated method stub
                 if (serviceState == true) {
                     serviceState = false;
-                    stopService(new Intent(LightService.MY_SERVICE));
+                    stopService(createExplizitIntent());
                 }                
             }
             
         });
         serviceState = true;
-        startService(new Intent(LightService.MY_SERVICE));
+        startService(createExplizitIntent());
+    }
+    
+    private Intent createExplizitIntent() {
+        Intent explizitIntent = new Intent(LightService.MY_SERVICE);
+        ComponentName component = new ComponentName("com.example.carcloud", "LightService");
+        explizitIntent.setComponent(component);
+        return explizitIntent;
     }
     
     @Override
