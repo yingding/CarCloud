@@ -23,6 +23,7 @@ public class LightService extends Service {
     private Camera.Parameters p;
     private int count;
     private IBinder serviceBinder;
+    private boolean isTermated;
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
@@ -34,6 +35,7 @@ public class LightService extends Service {
         super.onCreate();   
         Log.i(TAG, "Service onCreate()");
         serviceBinder = new BoundStartedServiceBinder();
+        this.isTermated = false;
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -48,7 +50,7 @@ public class LightService extends Service {
         boolean hasFlash = this.getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         count = 0;
-        while(true)
+        while(!isTermated)
         {
             try {
                 if (count > 5) break;
@@ -66,6 +68,7 @@ public class LightService extends Service {
                 
             } catch (InterruptedException e) {
                 e.printStackTrace();
+                this.isTermated = true;
             }
                        
         }
