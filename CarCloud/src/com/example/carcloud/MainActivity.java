@@ -1,6 +1,7 @@
 package com.example.carcloud;
 
 import android.support.v7.app.ActionBarActivity;
+import android.app.Service;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -18,6 +19,7 @@ public class MainActivity extends ActionBarActivity {
     private boolean serviceState;
     private ServiceConnection boundStartedServiceConnection;
     private static String TAG = "carcloud";
+    private Service myService;
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,13 +31,15 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 // TODO Auto-generated method stub
-                Log.i(TAG, "Service bound");
+                
+                Log.v(TAG, "Service bound");
+                
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 // TODO Auto-generated method stub
-                Log.i(TAG, "Service disconnected");
+                Log.v(TAG, "Service disconnected");
             }
         };
 
@@ -51,8 +55,8 @@ public class MainActivity extends ActionBarActivity {
             }
             
         });
-        serviceState = true;
-        startService(createExplizitIntent());
+        //serviceState = true;
+        //startService(createExplizitIntent());
     }
     
     private Intent createExplizitIntent() {
@@ -67,10 +71,9 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onStart() {
         super.onStart();
-//        serviceState = true;
-//        Intent intent = new Intent(this, LightService.class);
-//        //intent.setComponent(createComponentName());
-//        bindService(intent, boundStartedServiceConnection, Context.BIND_AUTO_CREATE);
+        Intent intent = new Intent(this, LightService.class);
+        //intent.setComponent(createComponentName());
+        bindService(intent, boundStartedServiceConnection, Context.BIND_AUTO_CREATE);
     }
  
     @Override

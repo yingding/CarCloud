@@ -28,9 +28,10 @@ public class LightService extends Service {
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
-        serving();
+        // serving();
         return serviceBinder;
     }
+    
     @Override
     public void onCreate() {
         super.onCreate();   
@@ -43,7 +44,7 @@ public class LightService extends Service {
         // TODO Auto-generated method stub
         super.onStart(intent, startId);
         serving();
-        this.stopSelf();
+        //this.stopSelf();
         return START_STICKY; 
     }  
     
@@ -63,16 +64,16 @@ public class LightService extends Service {
                     if (cam == null) initCam();
                     flipLight();
                     // if the cam is not released and connected again, 
-                    // startPreview is not posible after stopPreview
-                    cam.release();
+                    // startPreview is not possible after stopPreview
+                    
                 } else if (hasFlash) {
                     // if no wi
                     if (!lightState) {
-                      initCam();
+                      if (cam == null) initCam();
                       cam.startPreview();
-                  }
+                    }
                 }               
-                Thread.sleep(4000);
+                Thread.sleep(2000);
                 count++;        
             } catch (InterruptedException e) {
                 //e.printStackTrace();
@@ -84,6 +85,10 @@ public class LightService extends Service {
                 Log.i(TAG, "Service interrupted!");
             }
                
+        }
+        if (cam != null) {
+            cam.stopPreview();
+            cam.release();
         }
     }
     
@@ -104,7 +109,9 @@ public class LightService extends Service {
             cam.stopPreview();
             lightState = false;
             Log.i(TAG,"light is off");
+            cam.release();
         } else {
+            if (cam == null) initCam();
             cam.startPreview();
             lightState = true;
             Log.i(TAG,"light is on");
