@@ -11,6 +11,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 /**
+ * use tag:Tag in LogCat to show only the Log.x output
  * reference https://gist.github.com/Alp-Phone/56d22b36714e3339be05
  * @author Yingding Wang
  *
@@ -27,7 +28,7 @@ public class LightService extends Service {
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
-        
+        serving();
         return serviceBinder;
     }
     @Override
@@ -41,41 +42,44 @@ public class LightService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         // TODO Auto-generated method stub
         super.onStart(intent, startId);
+        serving();
+        //this.stopSelf();
+        return START_STICKY; 
+    }  
+    
+    private void serving() {
         ConnectivityManager manager = (ConnectivityManager) 
-                        getSystemService(MainActivity.CONNECTIVITY_SERVICE);
+                getSystemService(MainActivity.CONNECTIVITY_SERVICE);
         cam = Camera.open();
         p = cam.getParameters();
         p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
         cam.setParameters(p);
         boolean hasFlash = this.getPackageManager()
-                .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
+        .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         count = 0;
         Log.i(TAG,"service started in onStartCommand");
-        while(!isTermated)
-        {
+        while(!isTermated) {
             try {
                 if (count > 5) break;
                 Thread.sleep(3000);
                 count++;
-                
+        
                 Boolean isWifi = manager.getNetworkInfo(
-                        ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
+                ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
                 if (isWifi && hasFlash) {
                     flipLight();                    
                 } else if (hasFlash) {
                     // if no wi
-                    if (!lightState) cam.startPreview();
+                  if (!lightState) cam.startPreview();
                 }
-                
+        
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                //e.printStackTrace();
                 this.isTermated = true;
             }
-                       
+               
         }
-        this.stopSelf();
-        return START_STICKY; 
-    }  
+    }
     
     private void flipLight() {
         if (cam == null) {
@@ -98,11 +102,11 @@ public class LightService extends Service {
             cam.stopPreview();
             cam.release();
         }
+        Log.i(TAG, "Service Destroyed");
         super.onDestroy();
         //this.stopSelf();        
     }
     
     public class BoundStartedServiceBinder extends Binder {
     }
-
 }
