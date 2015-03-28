@@ -20,11 +20,11 @@ public class LightService extends Service {
     static final String MY_SERVICE = "com.example.carcloud.LightService";
     private static String TAG = "carcloud";
     private static Camera cam;
-    private static boolean lightState = false;
+    private volatile boolean lightState = false;
     private Camera.Parameters p;
     private int count;
     private IBinder serviceBinder;
-    private boolean isTermated;
+    private volatile boolean isTermated;
     @Override
     public IBinder onBind(Intent arg0) {
         // TODO Auto-generated method stub
@@ -50,29 +50,27 @@ public class LightService extends Service {
     private void serving() {
         ConnectivityManager manager = (ConnectivityManager) 
                 getSystemService(MainActivity.CONNECTIVITY_SERVICE);
-        cam = Camera.open();
-        p = cam.getParameters();
-        p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
-        cam.setParameters(p);
         boolean hasFlash = this.getPackageManager()
         .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         count = 0;
         Log.i(TAG,"service started in onStartCommand");
         while(!isTermated) {
-            try {
-                if (count > 5) break;
-                Thread.sleep(3000);
-                count++;
-        
+            try { 
+                if (count > 5) break;     
                 Boolean isWifi = manager.getNetworkInfo(
                 ConnectivityManager.TYPE_WIFI).isConnectedOrConnecting();
                 if (isWifi && hasFlash) {
-                    flipLight();                    
+                    initCam();
+                    flipLight();
+                    // if the cam is not released and connected again, 
+                    // startPreview is not posible after stopPreview
+                    cam.release();
                 } else if (hasFlash) {
                     // if no wi
                   if (!lightState) cam.startPreview();
-                }
-        
+                }               
+                Thread.sleep(4000);
+                count++;        
             } catch (InterruptedException e) {
                 //e.printStackTrace();
                 this.isTermated = true;
@@ -81,17 +79,27 @@ public class LightService extends Service {
         }
     }
     
+    private void initCam() {
+        cam = Camera.open();
+        p = cam.getParameters();
+        p.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+        cam.setParameters(p);
+    }
+    
     private void flipLight() {
         if (cam == null) {
             Log.v("carservice","cam is null!");
             return;
         }
-        if (lightState) {
+        Log.i(TAG, "flipLight");
+        if (lightState) {            
+            cam.stopPreview();
             lightState = false;
-            cam.stopPreview();            
+            Log.i(TAG,"light is off");
         } else {
-            lightState = true;
             cam.startPreview();
+            lightState = true;
+            Log.i(TAG,"light is on");
         }
     }
  
