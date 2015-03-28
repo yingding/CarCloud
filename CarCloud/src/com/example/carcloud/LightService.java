@@ -50,6 +50,7 @@ public class LightService extends Service {
         boolean hasFlash = this.getPackageManager()
                 .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         count = 0;
+        Log.i(TAG,"service started in onStartCommand");
         while(!isTermated)
         {
             try {
