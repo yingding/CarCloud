@@ -38,6 +38,7 @@ public class LightService extends Service {
         Log.i(TAG, "Service onCreate()");
         serviceBinder = new BoundStartedServiceBinder();
         this.isTermated = false;
+        serving();
     }
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -54,7 +55,7 @@ public class LightService extends Service {
         boolean hasFlash = this.getPackageManager()
         .hasSystemFeature(PackageManager.FEATURE_CAMERA_FLASH);
         count = 0;
-        Log.i(TAG,"service started in onStartCommand");
+        Log.i(TAG,"service started in serving");
         while(!isTermated) {
             try { 
                 if (count > 5) break;     
@@ -80,6 +81,7 @@ public class LightService extends Service {
                 if (cam != null) {
                     cam.stopPreview();
                     cam.release();
+                    cam = null;
                 }
                 this.isTermated = true;
                 Log.i(TAG, "Service interrupted!");
@@ -89,6 +91,7 @@ public class LightService extends Service {
         if (cam != null) {
             cam.stopPreview();
             cam.release();
+            cam = null;
         }
     }
     
@@ -110,6 +113,7 @@ public class LightService extends Service {
             lightState = false;
             Log.i(TAG,"light is off");
             cam.release();
+            cam = null;
         } else {
             if (cam == null) initCam();
             cam.startPreview();
@@ -124,6 +128,7 @@ public class LightService extends Service {
         if (cam != null) {
             cam.stopPreview();
             cam.release();
+            cam = null;
         }
         Log.i(TAG, "Service Destroyed");
         super.onDestroy();

@@ -1,5 +1,7 @@
 package com.example.carcloud;
 
+import com.example.carcloud.LightService.BoundStartedServiceBinder;
+
 import android.support.v7.app.ActionBarActivity;
 import android.app.Service;
 import android.content.ComponentName;
@@ -31,7 +33,6 @@ public class MainActivity extends ActionBarActivity {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 // TODO Auto-generated method stub
-                
                 Log.v(TAG, "Service bound");
                 
             }
